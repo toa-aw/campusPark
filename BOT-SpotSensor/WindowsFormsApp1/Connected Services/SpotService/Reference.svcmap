@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ReferenceGroup xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" ID="2aea0cbf-9c27-4eb8-b748-8fc531b50e15" xmlns="urn:schemas-microsoft-com:xml-wcfservicemap">
+  <ClientOptions>
+    <GenerateAsynchronousMethods>false</GenerateAsynchronousMethods>
+    <GenerateTaskBasedAsynchronousMethod>true</GenerateTaskBasedAsynchronousMethod>
+    <EnableDataBinding>true</EnableDataBinding>
+    <ExcludedTypes />
+    <ImportXmlTypes>false</ImportXmlTypes>
+    <GenerateInternalTypes>false</GenerateInternalTypes>
+    <GenerateMessageContracts>false</GenerateMessageContracts>
+    <NamespaceMappings />
+    <CollectionMappings />
+    <GenerateSerializableTypes>true</GenerateSerializableTypes>
+    <Serializer>Auto</Serializer>
+    <UseSerializerForFaults>true</UseSerializerForFaults>
+    <ReferenceAllAssemblies>true</ReferenceAllAssemblies>
+    <ReferencedAssemblies />
+    <ReferencedDataContractTypes />
+    <ServiceContractMappings />
+  </ClientOptions>
+  <MetadataSources>
+    <MetadataSource Address="http://localhost:50248/SpotSensor.svc" Protocol="http" SourceId="1" />
+  </MetadataSources>
+  <Metadata>
+    <MetadataFile FileName="SpotSensor.xsd" MetadataType="Schema" ID="ebe4bf11-15de-4644-b175-e454a9fd273b" SourceId="1" SourceUrl="http://localhost:50248/SpotSensor.svc?xsd=xsd2" />
+    <MetadataFile FileName="BotService.wsdl" MetadataType="Wsdl" ID="c971ca3a-fca2-4dd0-932e-23fd4798d1cc" SourceId="1" SourceUrl="http://localhost:50248/SpotSensor.svc?wsdl" />
+    <MetadataFile FileName="SpotSensor1.xsd" MetadataType="Schema" ID="e34051e0-fbbb-494c-ac51-25f6e3943fbe" SourceId="1" SourceUrl="http://localhost:50248/SpotSensor.svc?xsd=xsd1" />
+    <MetadataFile FileName="SpotSensor.disco" MetadataType="Disco" ID="9be5cb86-b3df-4af5-9ea1-af37a25bce43" SourceId="1" SourceUrl="http://localhost:50248/SpotSensor.svc?disco" />
+    <MetadataFile FileName="SpotSensor2.xsd" MetadataType="Schema" ID="73712cf9-3919-4ecf-9636-35fab32b9c3b" SourceId="1" SourceUrl="http://localhost:50248/SpotSensor.svc?xsd=xsd0" />
+  </Metadata>
+  <Extensions>
+    <ExtensionFile FileName="configuration91.svcinfo" Name="configuration91.svcinfo" />
+    <ExtensionFile FileName="configuration.svcinfo" Name="configuration.svcinfo" />
+  </Extensions>
+</ReferenceGroup>
