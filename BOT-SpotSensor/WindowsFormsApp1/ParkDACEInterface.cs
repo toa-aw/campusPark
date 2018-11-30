@@ -13,32 +13,34 @@ namespace WindowsFormsApp1
 {
     public partial class ParkDACEInterface : Form
     {
-        private Timer timer1;
+        //private Timer timer1;
         private List<ParkingSpot> parkingSpotsList;
+        private BackgroundWorker bw = new BackgroundWorker();
+        private ParkingSensorNodeDll.ParkingSensorNodeDll dll = null;
+
+        public void DoWork(object sender, DoWorkEventArgs e)
+        {
+            dll.Initialize(NewSensorValueFunction, 3000);
+        }
+
 
         public ParkDACEInterface()
         {
             InitializeComponent();
-            InitTimer();
+            bw.DoWork += new DoWorkEventHandler(DoWork);
+
+            dll = new ParkingSensorNodeDll.ParkingSensorNodeDll();
+            bw.RunWorkerAsync();
         }
 
-        
-        public void InitTimer()
+        public void NewSensorValueFunction(string str)
         {
-            timer1 = new Timer();
-            timer1.Tick += new EventHandler(timer1_Tick);
-            timer1.Interval = 2000; // in miliseconds
-            timer1.Start();
-        }
-
-        private void timer1_Tick(object sender, EventArgs e)
-        {
-            using (SpotService.BotServiceClient service = new SpotService.BotServiceClient())
+            //To have access to the listbox that is in other thread (Form)
+            this.BeginInvoke((MethodInvoker)delegate
             {
-                parkingSpotsList = service.GetSpots().ToList();
+                txtBoxRecievedData.Text += str + Environment.NewLine;
                 
-            }
+            });
         }
-
     }
 }

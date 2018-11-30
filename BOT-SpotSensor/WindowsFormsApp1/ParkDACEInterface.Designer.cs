@@ -28,10 +28,8 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
             this.txtBoxRecievedData = new System.Windows.Forms.TextBox();
             this.txtBoxFormatedData = new System.Windows.Forms.TextBox();
-            this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.lblFormatedData = new System.Windows.Forms.Label();
             this.lblRecieved = new System.Windows.Forms.Label();
             this.SuspendLayout();
@@ -52,11 +50,6 @@
             this.txtBoxFormatedData.Size = new System.Drawing.Size(318, 372);
             this.txtBoxFormatedData.TabIndex = 1;
             // 
-            // contextMenuStrip1
-            // 
-            this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(61, 4);
-            // 
             // lblFormatedData
             // 
             this.lblFormatedData.AutoSize = true;
@@ -75,7 +68,7 @@
             this.lblRecieved.TabIndex = 4;
             this.lblRecieved.Text = "Recieved Data:";
             // 
-            // Form1
+            // ParkDACEInterface
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -84,7 +77,7 @@
             this.Controls.Add(this.lblFormatedData);
             this.Controls.Add(this.txtBoxFormatedData);
             this.Controls.Add(this.txtBoxRecievedData);
-            this.Name = "Form1";
+            this.Name = "ParkDACEInterface";
             this.Text = "ParkDACE";
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -95,7 +88,6 @@
 
         private System.Windows.Forms.TextBox txtBoxRecievedData;
         private System.Windows.Forms.TextBox txtBoxFormatedData;
-        private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
         private System.Windows.Forms.Label lblFormatedData;
         private System.Windows.Forms.Label lblRecieved;
     }

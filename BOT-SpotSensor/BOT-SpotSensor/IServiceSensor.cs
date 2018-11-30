@@ -14,7 +14,16 @@ namespace BOT_SpotSensor
     {
         // TODO: Add your service operations here
         [OperationContract]
-        List<ParkingSpot> GetSpots();
+        List<ParkingSpot> GetSpotsData();
+
+        [OperationContract]
+        ParkingSpot GetSpotData();
+
+        [OperationContract]
+        String GetSpotString();
+
+        [OperationContract]
+        String GetSpotsString(); 
     }
 
 
