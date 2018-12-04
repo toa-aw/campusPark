@@ -1,0 +1,44 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  
+  <xs:element name="parkinglot" type="parkinglotType"/>
+
+  <xs:complexType name="parkinglotType">
+    <xs:sequence>
+      <xs:element name="parkingSpot" type="parkingSpotType" maxOccurs="unbounded" />
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="parkingSpotType">
+    <xs:sequence>
+      <xs:element name="id" type="xs:string" />
+      <xs:element name="type" type="xs:string" />
+      <xs:element name="name" type="xs:string" />
+      <xs:element name="location" type="xs:string" />
+      <xs:element name="status" type="statustype" />
+      <xs:element name="batteryStatus" type="batterytype" />
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="statustype">
+    <xs:sequence>
+      <xs:element name="value" type="valuetype" />
+      <xs:element name="timestamp" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:simpleType name ="valuetype">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value ="free"></xs:enumeration>
+      <xs:enumeration value ="occupied"></xs:enumeration>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="batterytype">
+    <xs:restriction base="xs:integer">
+      <xs:minInclusive value="0"/>
+      <xs:maxInclusive value="1"/>
+    </xs:restriction>
+  </xs:simpleType>
+  
+</xs:schema>
