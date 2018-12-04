@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ReferenceGroup xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" ID="2aea0cbf-9c27-4eb8-b748-8fc531b50e15" xmlns="urn:schemas-microsoft-com:xml-wcfservicemap">
+<ReferenceGroup xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" ID="7cde3f54-545d-49c1-a9e3-3cc99878f944" xmlns="urn:schemas-microsoft-com:xml-wcfservicemap">
   <ClientOptions>
     <GenerateAsynchronousMethods>false</GenerateAsynchronousMethods>
     <GenerateTaskBasedAsynchronousMethod>true</GenerateTaskBasedAsynchronousMethod>
@@ -22,11 +22,11 @@
     <MetadataSource Address="http://localhost:50248/SpotSensor.svc" Protocol="http" SourceId="1" />
   </MetadataSources>
   <Metadata>
-    <MetadataFile FileName="SpotSensor.xsd" MetadataType="Schema" ID="ebe4bf11-15de-4644-b175-e454a9fd273b" SourceId="1" SourceUrl="http://localhost:50248/SpotSensor.svc?xsd=xsd2" />
-    <MetadataFile FileName="BotService.wsdl" MetadataType="Wsdl" ID="c971ca3a-fca2-4dd0-932e-23fd4798d1cc" SourceId="1" SourceUrl="http://localhost:50248/SpotSensor.svc?wsdl" />
-    <MetadataFile FileName="SpotSensor1.xsd" MetadataType="Schema" ID="e34051e0-fbbb-494c-ac51-25f6e3943fbe" SourceId="1" SourceUrl="http://localhost:50248/SpotSensor.svc?xsd=xsd1" />
-    <MetadataFile FileName="SpotSensor.disco" MetadataType="Disco" ID="9be5cb86-b3df-4af5-9ea1-af37a25bce43" SourceId="1" SourceUrl="http://localhost:50248/SpotSensor.svc?disco" />
-    <MetadataFile FileName="SpotSensor2.xsd" MetadataType="Schema" ID="73712cf9-3919-4ecf-9636-35fab32b9c3b" SourceId="1" SourceUrl="http://localhost:50248/SpotSensor.svc?xsd=xsd0" />
+    <MetadataFile FileName="SpotSensor.xsd" MetadataType="Schema" ID="2c84920d-0244-4888-9939-e3d9f426d380" SourceId="1" SourceUrl="http://localhost:50248/SpotSensor.svc?xsd=xsd2" />
+    <MetadataFile FileName="BotService.wsdl" MetadataType="Wsdl" ID="7b88a44b-97f8-49e1-bc16-600a3a7e34f9" SourceId="1" SourceUrl="http://localhost:50248/SpotSensor.svc?wsdl" />
+    <MetadataFile FileName="SpotSensor1.xsd" MetadataType="Schema" ID="93790ad3-48ee-4f7a-8a78-adc712f54372" SourceId="1" SourceUrl="http://localhost:50248/SpotSensor.svc?xsd=xsd1" />
+    <MetadataFile FileName="SpotSensor.disco" MetadataType="Disco" ID="018934e7-6e01-4d18-a76c-da4ef323bd8a" SourceId="1" SourceUrl="http://localhost:50248/SpotSensor.svc?disco" />
+    <MetadataFile FileName="SpotSensor2.xsd" MetadataType="Schema" ID="6f83d2e3-27a0-4d31-a066-2db9685684b9" SourceId="1" SourceUrl="http://localhost:50248/SpotSensor.svc?xsd=xsd0" />
   </Metadata>
   <Extensions>
     <ExtensionFile FileName="configuration91.svcinfo" Name="configuration91.svcinfo" />

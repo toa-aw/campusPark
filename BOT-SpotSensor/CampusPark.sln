@@ -10,6 +10,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ParkDACE", "WindowsFormsApp
 		{4030C8B2-A29A-4E32-B831-D63C84DDB11E} = {4030C8B2-A29A-4E32-B831-D63C84DDB11E}
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExcelLib", "ExcelLib\ExcelLib.csproj", "{8EEB2F11-3672-40F9-9BD2-4A65B1B29FC9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -24,6 +26,10 @@ Global
 		{15967165-7333-4623-B004-19CCFAC354A5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{15967165-7333-4623-B004-19CCFAC354A5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{15967165-7333-4623-B004-19CCFAC354A5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8EEB2F11-3672-40F9-9BD2-4A65B1B29FC9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8EEB2F11-3672-40F9-9BD2-4A65B1B29FC9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8EEB2F11-3672-40F9-9BD2-4A65B1B29FC9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8EEB2F11-3672-40F9-9BD2-4A65B1B29FC9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
