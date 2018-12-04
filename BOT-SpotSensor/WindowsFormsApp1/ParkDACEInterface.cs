@@ -53,9 +53,17 @@ namespace WindowsFormsApp1
             XmlDocument doc = new XmlDocument();
             doc.Load(textBoxXmlFile.Text);
 
-            XmlElement delayMs = doc.DocumentElement;
+            XmlElement root = doc.DocumentElement;
 
-            txtBoxFormatedData.Text = delayMs.GetAttribute("refreshRate");
+            string unit = root.GetAttribute("units");
+
+            switch (unit)
+            {
+                default:
+                    break;
+            }
+
+
 
             XmlNodeList lst = doc.SelectNodes("//provider/connectionType");
             foreach (XmlNode node in lst)
