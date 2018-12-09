@@ -7,6 +7,7 @@
     <xs:sequence>
       <xs:element name="parkingSpot" type="parkingSpotType" maxOccurs="unbounded" />
     </xs:sequence>
+    <xs:attribute name="name" type="xs:string" />
   </xs:complexType>
 
   <xs:complexType name="parkingSpotType">
