@@ -14,11 +14,15 @@ using BOT_SpotSensor;
 using System.IO;
 using System.Collections;
 using uPLibrary.Networking.M2Mqtt;
+using System.Threading;
+using System.Timers;
 
 namespace WindowsFormsApp1
 {
     public partial class ParkDACEInterface : Form
     {
+        private System.Windows.Forms.Timer aTimer = new System.Windows.Forms.Timer();
+
         const String STR_CHANNEL_NAME = "parkingSpots";
 
         //MqttClient m_cClient = new MqttClient(IPAddress.Parse("192.168.237.155"));
@@ -30,25 +34,31 @@ namespace WindowsFormsApp1
         private BackgroundWorker bw = new BackgroundWorker();
         private ParkingSensorNodeDll.ParkingSensorNodeDll dll = null;
 
+        private bool makeResquest = true;
+
         Hashtable spotsLocations = new Hashtable();
 
         public ParkDACEInterface()
         {
             InitializeComponent();
-            dll = new ParkingSensorNodeDll.ParkingSensorNodeDll();            
+            bw.DoWork += new DoWorkEventHandler(DoWork);
+            aTimer.Tick += new EventHandler(OnTimedEvent);
+            aTimer.Interval = 2000;
+            aTimer.Enabled = true;
         }
 
-        private void Form1_FormClosing(object sender, FormClosingEventArgs e)
+        private void OnTimedEvent(Object source, EventArgs e)
         {
-            if (m_cClient.IsConnected)
-            {
-                m_cClient.Unsubscribe(m_strTopicsInfo); //Put this in a button to see notif!
-                m_cClient.Disconnect(); //Free process and process's resources
-            }
+            runSoapBot();
+        }
+
+        public void DoWork(object sender, DoWorkEventArgs e)
+        {
+            readConfigFile();
         }
 
         public void NewSensorValueFunction(string str)
-        {            
+        {
             //To have access to the listbox that is in other thread (Form)
             this.BeginInvoke((MethodInvoker)delegate
             {
@@ -71,13 +81,11 @@ namespace WindowsFormsApp1
                         break;
                     default:
                         break;
-                }              
-                
+                }
+
                 listBox1.Items.Add(newspot.OuterXml);
-                
-                dll.Stop();
-            });            
-        }        
+            });
+        }
 
         public void readConfigFile()
         {
@@ -90,59 +98,69 @@ namespace WindowsFormsApp1
             string unit = configRootElem.GetAttribute("units");
             string delay = configRootElem.GetAttribute("refreshRate");
 
-            XmlNodeList lst = configDoc.SelectNodes("//provider");
-            foreach (XmlNode node in lst)
+            XmlNode lst = configDoc.SelectSingleNode("//provider[connectionType='DLL']");
+
+            XmlElement connectionType = lst["connectionType"];
+            XmlElement parkInfo = lst["parkInfo"];
+            int numberOfSpots = 0;
+
+            numberOfSpots = int.Parse(parkInfo["numberOfSpots"].InnerText);
+            loadExcelData(parkInfo["geoLocationFile"].InnerText, numberOfSpots);
+
+            switch (unit)
             {
-                XmlElement connectionType = node["connectionType"];
-                XmlElement parkInfo = node["parkInfo"];
-                int numberOfSpots = 0;
+                case "seconds":
+                    int delaysec = int.Parse(delay) * 1000;
+                    dll.Initialize(NewSensorValueFunction, delaysec);
+                    break;
+                case "minutes":
+                    int delaymin = int.Parse(delay) * 60000;
+                    dll.Initialize(NewSensorValueFunction, delaymin);
+                    break;
+                default:
+                    break;
+            }
+        }
 
-                switch (connectionType.InnerText)
+        public void runSoapBot()
+        {
+            XmlDocument configDoc = new XmlDocument();
+            string path = "ParkingNodesConfig.xml";
+            configDoc.Load(path);
+
+            XmlElement configRootElem = configDoc.DocumentElement;
+
+            string unit = configRootElem.GetAttribute("units");
+            string delay = configRootElem.GetAttribute("refreshRate");
+
+            XmlNode lst = configDoc.SelectSingleNode("//provider[connectionType='SOAP']");
+
+            XmlElement connectionType = lst["connectionType"];
+            XmlElement parkInfo = lst["parkInfo"];
+            int numberOfSpots = 0;
+
+            using (BotServiceClient service = new BotServiceClient())
+            {
+                
+                numberOfSpots = int.Parse(parkInfo["numberOfSpots"].InnerText);
+                loadExcelData(parkInfo["geoLocationFile"].InnerText, numberOfSpots);
+
+                XmlDocument botParkingSpotsDoc = new XmlDocument();
+                string xml = service.GetSpotString();
+                botParkingSpotsDoc.LoadXml(xml);
+
+                XmlNode spotBot = botParkingSpotsDoc.SelectSingleNode("/parkingSpot");
+
+                XmlNode status = spotBot["status"];
+                string location = spotsLocations[spotBot["name"].InnerText].ToString();
+
+                XmlElement spot = createParkingSpot(parkingSpotsDoc, spotBot["id"].InnerText, spotBot["type"].InnerText, spotBot["name"].InnerText, location, status["value"].InnerText, status["timestamp"].InnerText, spotBot["batteryStatus"].InnerText);
+                sendSpotData(spot);
+                listBox2.BeginInvoke((MethodInvoker)delegate
                 {
-                    case "DLL":
-                        
-                        numberOfSpots = int.Parse(parkInfo["numberOfSpots"].InnerText);
-                        loadExcelData(parkInfo["geoLocationFile"].InnerText, numberOfSpots);
-                        
-                        switch (unit)
-                        {
-                            case "seconds":
-                                int delaysec = int.Parse(delay) * 1000;
-                                dll.Initialize(NewSensorValueFunction, delaysec);
-                                break;
-                            case "minutes":
-                                int delaymin = int.Parse(delay) * 60000;
-                                dll.Initialize(NewSensorValueFunction, delaymin);
-                                break;
-                            default:
-                                break;
-                        }
+                    listBox2.Items.Add(spot.OuterXml);
+                });
 
-                        break;
-                    case "SOAP":
-                        using (BotServiceClient service = new BotServiceClient())
-                        {
-                            numberOfSpots = int.Parse(parkInfo["numberOfSpots"].InnerText);
-                            loadExcelData(parkInfo["geoLocationFile"].InnerText, numberOfSpots);
-                            //txtBoxFormatedData.Text = parkInfo["geoLocationFile"].InnerText;
-                            XmlDocument botParkingSpotsDoc = new XmlDocument();
-                            string xml = service.GetSpotsString();
-                            botParkingSpotsDoc.LoadXml(xml);
-                            XmlNodeList spots = botParkingSpotsDoc.SelectNodes("/parkinglot/parkingSpot");
-                            
-                            foreach (XmlNode item in spots)
-                            {
-                                XmlNode status = item["status"];
-                                string location = spotsLocations[item["name"].InnerText].ToString();
-                                XmlElement spot = createParkingSpot(parkingSpotsDoc, item["id"].InnerText, item["type"].InnerText, item["name"].InnerText, location, status["value"].InnerText, status["timestamp"].InnerText, item["batteryStatus"].InnerText);
-                                sendSpotData(spot);
-                                listBox2.Items.Add(spot.OuterXml);
-                            }
-                        }
-                        break;
-                    default:
-                        break;
-                }
             }
         }
 
@@ -150,10 +168,9 @@ namespace WindowsFormsApp1
         {
             int i = 0;
             int range = linesToRead + 5;
-            List<string> parkIds = ExcelLib.ExcelHandler.ReadNxMCells(filename, "A6", "A"+ range);
+            List<string> parkIds = ExcelLib.ExcelHandler.ReadNxMCells(filename, "A6", "A" + range);
             List<string> spotLocations = ExcelLib.ExcelHandler.ReadNxMCells(filename, "B6", "B" + range);
-            
-            
+
             foreach (string key in parkIds)
             {
                 if (!spotsLocations.Contains(key))
@@ -179,7 +196,9 @@ namespace WindowsFormsApp1
 
         private void btnFormatData_Click(object sender, EventArgs e)
         {
-            readConfigFile();
+            //SetTimer();
+            //dll = new ParkingSensorNodeDll.ParkingSensorNodeDll();
+            //bw.RunWorkerAsync();
         }
 
         public XmlElement createParkingSpot(XmlDocument doc, string parkid, string spotType, string spotname, string spotlocation, string spotstatusvalue, string spotTimestamp, string spotbatterystatus)
@@ -212,6 +231,26 @@ namespace WindowsFormsApp1
             parkingSpot.AppendChild(batteryStatus);
 
             return parkingSpot;
+        }
+
+        private void Form1_FormLoad(object sender, EventArgs e)
+        {
+            aTimer.Start();
+            dll = new ParkingSensorNodeDll.ParkingSensorNodeDll();
+            bw.RunWorkerAsync();
+        }
+
+        private void Form1_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            dll.Stop();
+            aTimer.Stop();
+            aTimer.Dispose();
+            makeResquest = false;
+            if (m_cClient.IsConnected)
+            {
+                m_cClient.Unsubscribe(m_strTopicsInfo); //Put this in a button to see notif!
+                m_cClient.Disconnect(); //Free process and process's resources
+            }
         }
     }
 }

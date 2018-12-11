@@ -119,6 +119,7 @@
             this.Name = "ParkDACEInterface";
             this.Text = "ParkDACE";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
+            this.Load += new System.EventHandler(this.Form1_FormLoad);
             this.ResumeLayout(false);
             this.PerformLayout();
 
