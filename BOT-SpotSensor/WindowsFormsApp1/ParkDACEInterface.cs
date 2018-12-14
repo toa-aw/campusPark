@@ -22,19 +22,10 @@ namespace WindowsFormsApp1
         private ParkingSensorNodeDll.ParkingSensorNodeDll dll = null;
         private List<string> spotsDLL = new List<string>();
 
-        public void DoWork(object sender, DoWorkEventArgs e)
-        {
-            dll.Initialize(NewSensorValueFunction, 50);
-        }
-
-
         public ParkDACEInterface()
         {
             InitializeComponent();
-            bw.DoWork += new DoWorkEventHandler(DoWork);
-
             dll = new ParkingSensorNodeDll.ParkingSensorNodeDll();
-            bw.RunWorkerAsync();
         }
 
         public void NewSensorValueFunction(string str)
@@ -116,6 +107,11 @@ namespace WindowsFormsApp1
         private void btnFormatData_Click(object sender, EventArgs e)
         {
             readConfigFile();
+        }
+
+        private void txtBoxFormatedData_TextChanged(object sender, EventArgs e)
+        {
+
         }
     }
 }
