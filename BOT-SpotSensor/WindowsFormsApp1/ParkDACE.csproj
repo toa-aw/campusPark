@@ -33,6 +33,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="M2Mqtt.Net, Version=4.3.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\M2Mqtt.4.3.0.0\lib\net45\M2Mqtt.Net.dll</HintPath>
+    </Reference>
     <Reference Include="ParkingSensorNodeDll">
       <HintPath>C:\Users\Sebastian\Downloads\ParkingSensorNodeDll.dll</HintPath>
     </Reference>
@@ -86,6 +89,7 @@
     <None Include="Connected Services\ServiceRefParkingSpotBot\SpotSensor2.xsd">
       <SubType>Designer</SubType>
     </None>
+    <None Include="packages.config" />
     <None Include="Properties\DataSources\BOT_SpotSensor.ParkingSpot.datasource" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>

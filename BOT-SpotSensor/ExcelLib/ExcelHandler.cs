@@ -154,6 +154,13 @@ namespace ExcelLib
                 content.Add(r.Value);
             }
 
+            excelWorkbook.Close();
+            excelApplication.Quit();
+
+            ReleaseCOMObjects(excelWorksheet);
+            ReleaseCOMObjects(excelWorkbook);
+            ReleaseCOMObjects(excelApplication);
+
             return content;
         }
 
