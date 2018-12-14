@@ -31,12 +31,23 @@ namespace BOT_SpotSensor
     [DataContract]
     public class ParkingSpot
     {
-        string id;
-        string type;
-        string name;
-        string locaction;
-        Status status;
-        int batteryStatus;
+        [DataMember]
+        public string id;
+
+        [DataMember]
+        public string type;
+
+        [DataMember]
+        public string name;
+
+        [DataMember]
+        public string locaction;
+
+        [DataMember]
+        public Status status;
+
+        [DataMember]
+        public int batteryStatus;
 
         public ParkingSpot()
         {
@@ -56,7 +67,7 @@ namespace BOT_SpotSensor
         public string StringId
         {
             get { return id; }
-            set {  id = value; }
+            set { id = value; }
         }
 
         [DataMember]
@@ -98,8 +109,11 @@ namespace BOT_SpotSensor
     [DataContract]
     public class Status
     {
-        string value;
-        DateTime timeStamp;
+        [DataMember]
+        public string value;
+
+        [DataMember]
+        public DateTime timeStamp;
 
         public Status(string value, DateTime timeStamp)
         {
