@@ -11,24 +11,35 @@ namespace SmartPark.Controllers
 {
     public class ParkingSpotsController : ApiController
     {
-        public IEnumerable<Park> GetAllParks()
+        public IEnumerable<ParkingSpot> GetAllParkingSpotsStatusForAGivenMoment(string parkId, string date)
         {
-            List<Park> parks = new List<Park>();
+            List<ParkingSpot> spots = new List<ParkingSpot>();
 
             using (SqlConnection conn = new SqlConnection())
             {
-                SqlCommand cmd = new SqlCommand("SELECT * FROM ParkingLots", conn);
+                SqlCommand cmd = new SqlCommand();
+                cmd.CommandText = "SELECT * " +
+                                  "FROM parkingspotsinfo s " +
+                                  "JOINS parkinglots p ON s.parkinglotid=p.id" +
+                                  "JOINS spotshistory h ON s.id=h.parkingspotid " +
+                                  "WHERE p.name = @idpark AND h.date = @time";
+                cmd.Parameters.AddWithValue("@idpark", parkId);
+                cmd.Parameters.AddWithValue("@time", date);
+                cmd.CommandType = System.Data.CommandType.Text;
+                cmd.Connection = conn;
                 try
                 {
                     conn.Open();
                     SqlDataReader reader = cmd.ExecuteReader();
                     while (reader.Read())
                     {
-                        Park park = new Park
+                        ParkingSpot spot = new ParkingSpot
                         {
-                            Id = reader["Id"].ToString(),
+                            Name = reader["Name"].ToString(),
+                            Status = reader["Status"].ToString(),
+                            BatteryStatus = (int)reader["BatteryStatus"],
                         };
-                        parks.Add(park);
+                        spots.Add(spot);
                     }
                     reader.Close();
                 }
@@ -38,7 +49,90 @@ namespace SmartPark.Controllers
                 }
             }
 
-            return parks;
+            return spots;
+        }
+
+        public IEnumerable<ParkingSpot> GetAllParkingSpotsStatusForAGivenTimePeriod(string parkId, string startDate, string endDate)
+        {
+            List<ParkingSpot> spots = new List<ParkingSpot>();
+
+            using (SqlConnection conn = new SqlConnection())
+            {
+                SqlCommand cmd = new SqlCommand();
+                cmd.CommandText = "SELECT * " +
+                                  "FROM parkingspotsinfo s " +
+                                  "JOINS parkinglots p ON s.parkinglotid=p.id" +
+                                  "JOINS spotshistory h ON s.id=h.parkingspotid " +
+                                  "WHERE p.name = @idpark AND h.date BETWEEN @startdate AND @enddate";
+                cmd.Parameters.AddWithValue("@idpark", parkId);
+                cmd.Parameters.AddWithValue("@startdate", startDate);
+                cmd.Parameters.AddWithValue("@enddate", endDate);
+                cmd.CommandType = System.Data.CommandType.Text;
+                cmd.Connection = conn;
+                try
+                {
+                    conn.Open();
+                    SqlDataReader reader = cmd.ExecuteReader();
+                    while (reader.Read())
+                    {
+                        ParkingSpot spot = new ParkingSpot
+                        {
+                            Name = reader["Name"].ToString(),
+                            Status = reader["Status"].ToString(),
+                            BatteryStatus = (int)reader["BatteryStatus"],
+                        };
+                        spots.Add(spot);
+                    }
+                    reader.Close();
+                }
+                catch (Exception)
+                {
+                    throw;
+                }
+            }
+
+            return spots;
+        }
+
+        public IEnumerable<ParkingSpot> GetFreeSpotsFromAParkInAGivenMoment(string parkId, string date)
+        {
+            List<ParkingSpot> spots = new List<ParkingSpot>();
+
+            using (SqlConnection conn = new SqlConnection())
+            {
+                SqlCommand cmd = new SqlCommand();
+                cmd.CommandText = "SELECT * " +
+                                  "FROM parkingspotsinfo s " +
+                                  "JOINS parkinglots p ON s.parkinglotid=p.id" +
+                                  "JOINS spotshistory h ON s.id=h.parkingspotid " +
+                                  "WHERE p.name = @idpark AND UPPER(s.status) = 'FREE' AND h.date = @time";
+                cmd.Parameters.AddWithValue("@idpark", parkId);
+                cmd.Parameters.AddWithValue("@time", date);
+                cmd.CommandType = System.Data.CommandType.Text;
+                cmd.Connection = conn;
+                try
+                {
+                    conn.Open();
+                    SqlDataReader reader = cmd.ExecuteReader();
+                    while (reader.Read())
+                    {
+                        ParkingSpot spot = new ParkingSpot
+                        {
+                            Name = reader["Name"].ToString(),
+                            Status = reader["Status"].ToString(),
+                            BatteryStatus = (int)reader["BatteryStatus"],
+                        };
+                        spots.Add(spot);
+                    }
+                    reader.Close();
+                }
+                catch (Exception)
+                {
+                    throw;
+                }
+            }
+
+            return spots;
         }
 
         public IEnumerable<ParkingSpot> GetAllSpotsFromASpecificPark(string parkId)
@@ -60,7 +154,8 @@ namespace SmartPark.Controllers
                     {
                         ParkingSpot spot = new ParkingSpot
                         {
-                            Name = reader["name"].ToString(),
+                            Id = (int)reader["Id"],
+                            Name = reader["Name"].ToString(),
                         };
                         spots.Add(spot);
                     }
@@ -73,6 +168,47 @@ namespace SmartPark.Controllers
             }
 
             return spots;
+        }
+
+        public IHttpActionResult GetSpotInfoForAGivenMoment(string spotId, string date)
+        {
+            ParkingSpot spot = new ParkingSpot();
+            using (SqlConnection conn = new SqlConnection())
+            {
+                SqlCommand cmd = new SqlCommand();
+                cmd.CommandText = "SELECT * " +
+                                  "FROM parkingspotinfo s " +
+                                  "JOINS spotshistory h ON s.id = h.parkingspotid " +
+                                  "WHERE s.id = @idspot AND h.date = @time";
+                cmd.Parameters.AddWithValue("@idspot", spotId);
+                cmd.Parameters.AddWithValue("@time", date);
+                cmd.CommandType = System.Data.CommandType.Text;
+                cmd.Connection = conn;
+
+                try
+                {
+                    conn.Open();
+                    SqlDataReader reader = cmd.ExecuteReader();
+                    if (reader.Read())
+                    {
+                        spot.Id = (int)reader["Id"];
+                        spot.Name = reader["Name"].ToString();
+                        spot.Location = reader["Location"].ToString();
+                        spot.Status = reader["Status"].ToString();
+                        spot.Timestamp = reader["LastUpdated"].ToString();
+                        spot.BatteryStatus = (int)reader["BatteryStatus"];
+                        reader.Close();
+                        return Ok(spot);
+                    }
+                }
+                catch (Exception)
+                {
+
+                    throw;
+                }
+            }
+
+            return NotFound();
         }
 
         public IEnumerable<ParkingSpot> GetParkingSpotsToBeReplaced()
@@ -90,8 +226,9 @@ namespace SmartPark.Controllers
                     {
                         ParkingSpot spot = new ParkingSpot
                         {
-                            Id = reader["Id"].ToString(),
-                            Name = reader["name"].ToString(),
+                            Id = (int)reader["Id"],
+                            Name = reader["Name"].ToString(),
+                            BatteryStatus  = (int)reader["BatteryStatus"],
                         };
                         spots.Add(spot);
                     }
@@ -106,15 +243,15 @@ namespace SmartPark.Controllers
             return spots;
         }
 
-        [Route("api/parks/{id:string}")]
-        public IHttpActionResult GetParkInformation(string id)
+        public IEnumerable<ParkingSpot> GetParkingSpotsToBeReplacedInASpecificPark(string id)
         {
-            Park park = new Park();
+            List<ParkingSpot> spots = new List<ParkingSpot>();
+
             using (SqlConnection conn = new SqlConnection())
             {
                 SqlCommand cmd = new SqlCommand();
-                cmd.CommandText = "SELECT * FROM ParkingLots WHERE id = @idpark";
-                cmd.Parameters.AddWithValue("@idpark", id);
+                cmd.CommandText = "SELECT * FROM parkingspotsinfo WHERE batterystatus = 1 AND parkinglotid = @parkId";
+                cmd.Parameters.AddWithValue("@parkId", id);
                 cmd.CommandType = System.Data.CommandType.Text;
                 cmd.Connection = conn;
 
@@ -122,50 +259,17 @@ namespace SmartPark.Controllers
                 {
                     conn.Open();
                     SqlDataReader reader = cmd.ExecuteReader();
-                    if (reader.Read())
+                    while (reader.Read())
                     {
-                        park.Id = reader["Id"].ToString();
-                        park.Description = reader["Description"].ToString();
-                        park.NumberOfSpots = (int)reader["NumberOfSpots"];
-                        park.OperatingHours = reader["OperatingHours"].ToString();
-                        park.NumberOfSpecialSpots = (int)reader["NumberOfSpecialSpots"];
-                        reader.Close();
-                        return Ok(park);
+                        ParkingSpot spot = new ParkingSpot
+                        {
+                            Id = (int)reader["Id"],
+                            Name = reader["Name"].ToString(),
+                            BatteryStatus = (int)reader["BatteryStatus"],
+                        };
+                        spots.Add(spot);
                     }
-                }
-                catch (Exception)
-                {
-
-                    throw;
-                }
-            }
-
-            return NotFound();
-        }
-
-        public IHttpActionResult GetParkOccupancyRate(string id)
-        {
-            decimal occupancyRate = 0;
-            using (SqlConnection conn = new SqlConnection())
-            {
-                SqlCommand cmd = new SqlCommand();
-                cmd.CommandText = "SELECT (occupied/free * 100) AS occupancyrate " +
-                                  "FROM (SELECT COUNT(*) as occupied FROM parkingspotsinfo WHERE UPPER(value) = 'OCCUPIED' AND parkinglotid = @idpark), " +
-                                  "(SELECT COUNT(*) as free FROM parkingspotsinfo WHERE UPPER(value) = 'FREE' AND parkinglotid = @idpark);";
-                cmd.Parameters.AddWithValue("@idpark", id);
-                cmd.CommandType = System.Data.CommandType.Text;
-                cmd.Connection = conn;
-
-                try
-                {
-                    conn.Open();
-                    SqlDataReader reader = cmd.ExecuteReader();
-                    if (reader.Read())
-                    {
-                        occupancyRate = Convert.ToDecimal(reader["occupancyrate"]);
-                        reader.Close();
-                        return Ok(occupancyRate);
-                    }
+                    reader.Close();
                 }
                 catch (Exception)
                 {
@@ -173,7 +277,7 @@ namespace SmartPark.Controllers
                 }
             }
 
-            return NotFound();
+            return spots;
         }
     }
 }

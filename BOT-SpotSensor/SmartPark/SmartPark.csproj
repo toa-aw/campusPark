@@ -92,7 +92,6 @@
     </Compile>
     <Compile Include="Models\Park.cs" />
     <Compile Include="Models\ParkingSpot.cs" />
-    <Compile Include="Models\Status.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

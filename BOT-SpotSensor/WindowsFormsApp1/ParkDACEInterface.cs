@@ -21,22 +21,17 @@ namespace WindowsFormsApp1
 {
     public partial class ParkDACEInterface : Form
     {
-        private System.Windows.Forms.Timer aTimer = new System.Windows.Forms.Timer();
 
         const String STR_SPOTS_CHANNEL_NAME = "parkingSpots";
-
         const String STR_PARKS_CHANNEL_NAME = "parkingLots";
+        
+        private System.Windows.Forms.Timer aTimer = new System.Windows.Forms.Timer();
 
-        //MqttClient m_cClient = new MqttClient(IPAddress.Parse("192.168.237.155"));
         MqttClient m_cClient;
         string[] m_strTopicsInfo = { STR_SPOTS_CHANNEL_NAME, STR_PARKS_CHANNEL_NAME };
-
-
-        XmlDocument parkingSpotsDoc = new XmlDocument();
+        
         private BackgroundWorker bw = new BackgroundWorker();
         private ParkingSensorNodeDll.ParkingSensorNodeDll dll = null;
-
-        private bool makeResquest = true;
 
         Hashtable spotsLocations = new Hashtable();
 
@@ -74,11 +69,11 @@ namespace WindowsFormsApp1
                 switch (spotData[3])
                 {
                     case "0":
-                        newspot = createParkingSpot(parkingSpotsDoc, spotData[0], "ParkingSpot", spotData[1], spotsLocations[spotData[1]].ToString(), "free", spotData[2], spotData[4]);
+                        newspot = createParkingSpot(spotData[0], "ParkingSpot", spotData[1], spotsLocations[spotData[1]].ToString(), "free", spotData[2], spotData[4]);
                         sendSpotData(newspot);
                         break;
                     case "1":
-                        newspot = createParkingSpot(parkingSpotsDoc, spotData[0], "ParkingSpot", spotData[1], spotsLocations[spotData[1]].ToString(), "occupied", spotData[2], spotData[4]);
+                        newspot = createParkingSpot(spotData[0], "ParkingSpot", spotData[1], spotsLocations[spotData[1]].ToString(), "occupied", spotData[2], spotData[4]);
                         sendSpotData(newspot);
                         break;
                     default:
@@ -156,7 +151,7 @@ namespace WindowsFormsApp1
                 XmlNode status = spotBot["status"];
                 string location = spotsLocations[spotBot["name"].InnerText].ToString();
 
-                XmlElement spot = createParkingSpot(parkingSpotsDoc, spotBot["id"].InnerText, spotBot["type"].InnerText, spotBot["name"].InnerText, location, status["value"].InnerText, status["timestamp"].InnerText, spotBot["batteryStatus"].InnerText);
+                XmlElement spot = createParkingSpot(spotBot["id"].InnerText, spotBot["type"].InnerText, spotBot["name"].InnerText, location, status["value"].InnerText, status["timestamp"].InnerText, spotBot["batteryStatus"].InnerText);
                 sendSpotData(spot);
                 listBox2.BeginInvoke((MethodInvoker)delegate
                 {
@@ -256,11 +251,17 @@ namespace WindowsFormsApp1
             parkingLot.AppendChild(operatingHours);
             parkingLot.AppendChild(numberOfSpecialSpots);
 
+            doc.Save(@"ParkingLots.xml");
+
             return parkingLot;
         }
 
-        public XmlElement createParkingSpot(XmlDocument doc, string parkid, string spotType, string spotname, string spotlocation, string spotstatusvalue, string spotTimestamp, string spotbatterystatus)
+        public XmlElement createParkingSpot(string parkid, string spotType, string spotname, string spotlocation, string spotstatusvalue, string spotTimestamp, string spotbatterystatus)
         {
+            XmlDocument doc = new XmlDocument();
+            XmlDeclaration dec = doc.CreateXmlDeclaration("1.0", null, null);
+            doc.AppendChild(dec);
+
             XmlElement parkingSpot = doc.CreateElement("parkingSpot");
 
             XmlElement id = doc.CreateElement("id");
@@ -288,6 +289,8 @@ namespace WindowsFormsApp1
             parkingSpot.AppendChild(status);
             parkingSpot.AppendChild(batteryStatus);
 
+            doc.Save(@"ParkingSpots.xml");
+
             return parkingSpot;
         }
 
@@ -304,7 +307,6 @@ namespace WindowsFormsApp1
             dll.Stop();
             aTimer.Stop();
             aTimer.Dispose();
-            makeResquest = false;
             if (m_cClient.IsConnected)
             {
                 m_cClient.Unsubscribe(m_strTopicsInfo); //Put this in a button to see notif!
