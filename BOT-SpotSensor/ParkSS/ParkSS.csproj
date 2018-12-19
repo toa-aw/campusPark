@@ -62,7 +62,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Connection.Designer.cs">
+    <Compile Include="Properties\Connection.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Connection.settings</DependentUpon>
@@ -72,7 +72,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-    <None Include="Connection.settings">
+    <None Include="Properties\Connection.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Connection.Designer.cs</LastGenOutput>
     </None>

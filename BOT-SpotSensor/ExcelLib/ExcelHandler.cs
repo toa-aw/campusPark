@@ -28,6 +28,7 @@ namespace ExcelLib
             //...
             //GC.Collect();
             ReleaseCOMObjects(excelWorkbook);
+            ReleaseCOMObjects(excelAplication);
         }
 
         public static void ReleaseCOMObjects(Object obj)
@@ -88,6 +89,7 @@ namespace ExcelLib
 
             ReleaseCOMObjects(excelWorksheet);
             ReleaseCOMObjects(excelWorkbook);
+            ReleaseCOMObjects(excelApplication);
 
             return content;
         }
@@ -174,6 +176,13 @@ namespace ExcelLib
             var excelWorksheet = (Excel.Worksheet)excelWorkbook.Worksheets.get_Item(i);
 
             Excel.Range r = excelWorksheet.UsedRange;
+
+            excelWorkbook.Close();
+            excelApplication.Quit();
+
+            ReleaseCOMObjects(excelWorksheet);
+            ReleaseCOMObjects(excelWorkbook);
+            ReleaseCOMObjects(excelApplication);
 
             return null;
         }

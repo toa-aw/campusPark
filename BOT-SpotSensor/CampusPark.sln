@@ -14,6 +14,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExcelLib", "ExcelLib\ExcelL
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ParkSS", "ParkSS\ParkSS.csproj", "{A4D98D42-9B69-4AD3-8BD9-A57491C0F021}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartPark", "SmartPark\SmartPark.csproj", "{D15F2E08-E8AF-4F3A-AB3C-5AAADD1A4E91}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ParkDashboard", "ParkDashboard\ParkDashboard.csproj", "{F0CE0935-AC5B-4EBE-B553-DE17F115B8DB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -36,6 +40,14 @@ Global
 		{A4D98D42-9B69-4AD3-8BD9-A57491C0F021}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A4D98D42-9B69-4AD3-8BD9-A57491C0F021}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A4D98D42-9B69-4AD3-8BD9-A57491C0F021}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D15F2E08-E8AF-4F3A-AB3C-5AAADD1A4E91}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D15F2E08-E8AF-4F3A-AB3C-5AAADD1A4E91}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D15F2E08-E8AF-4F3A-AB3C-5AAADD1A4E91}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D15F2E08-E8AF-4F3A-AB3C-5AAADD1A4E91}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F0CE0935-AC5B-4EBE-B553-DE17F115B8DB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F0CE0935-AC5B-4EBE-B553-DE17F115B8DB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F0CE0935-AC5B-4EBE-B553-DE17F115B8DB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F0CE0935-AC5B-4EBE-B553-DE17F115B8DB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -21,20 +21,17 @@ namespace WindowsFormsApp1
 {
     public partial class ParkDACEInterface : Form
     {
+
+        const String STR_SPOTS_CHANNEL_NAME = "parkingSpots";
+        const String STR_PARKS_CHANNEL_NAME = "parkingLots";
+        
         private System.Windows.Forms.Timer aTimer = new System.Windows.Forms.Timer();
 
-        const String STR_CHANNEL_NAME = "parkingSpots";
-
-        //MqttClient m_cClient = new MqttClient(IPAddress.Parse("192.168.237.155"));
         MqttClient m_cClient;
-        string[] m_strTopicsInfo = { STR_CHANNEL_NAME };
-
-
-        XmlDocument parkingSpotsDoc = new XmlDocument();
+        string[] m_strTopicsInfo = { STR_SPOTS_CHANNEL_NAME, STR_PARKS_CHANNEL_NAME };
+        
         private BackgroundWorker bw = new BackgroundWorker();
         private ParkingSensorNodeDll.ParkingSensorNodeDll dll = null;
-
-        private bool makeResquest = true;
 
         Hashtable spotsLocations = new Hashtable();
 
@@ -49,12 +46,12 @@ namespace WindowsFormsApp1
 
         private void OnTimedEvent(Object source, EventArgs e)
         {
-            runSoapBot();
+            getSoapBotData();
         }
 
         public void DoWork(object sender, DoWorkEventArgs e)
         {
-            readConfigFile();
+            getDllData();
         }
 
         public void NewSensorValueFunction(string str)
@@ -72,11 +69,11 @@ namespace WindowsFormsApp1
                 switch (spotData[3])
                 {
                     case "0":
-                        newspot = createParkingSpot(parkingSpotsDoc, spotData[0], "ParkingSpot", spotData[1], spotsLocations[spotData[1]].ToString(), "free", spotData[2], spotData[4]);
+                        newspot = createParkingSpot(spotData[0], "ParkingSpot", spotData[1], spotsLocations[spotData[1]].ToString(), "free", spotData[2], spotData[4]);
                         sendSpotData(newspot);
                         break;
                     case "1":
-                        newspot = createParkingSpot(parkingSpotsDoc, spotData[0], "ParkingSpot", spotData[1], spotsLocations[spotData[1]].ToString(), "occupied", spotData[2], spotData[4]);
+                        newspot = createParkingSpot(spotData[0], "ParkingSpot", spotData[1], spotsLocations[spotData[1]].ToString(), "occupied", spotData[2], spotData[4]);
                         sendSpotData(newspot);
                         break;
                     default:
@@ -87,7 +84,7 @@ namespace WindowsFormsApp1
             });
         }
 
-        public void readConfigFile()
+        public void getDllData()
         {
             XmlDocument configDoc = new XmlDocument();
             string path = "ParkingNodesConfig.xml";
@@ -122,7 +119,7 @@ namespace WindowsFormsApp1
             }
         }
 
-        public void runSoapBot()
+        public void getSoapBotData()
         {
             XmlDocument configDoc = new XmlDocument();
             string path = "ParkingNodesConfig.xml";
@@ -141,7 +138,7 @@ namespace WindowsFormsApp1
 
             using (BotServiceClient service = new BotServiceClient())
             {
-                
+
                 numberOfSpots = int.Parse(parkInfo["numberOfSpots"].InnerText);
                 loadExcelData(parkInfo["geoLocationFile"].InnerText, numberOfSpots);
 
@@ -154,7 +151,7 @@ namespace WindowsFormsApp1
                 XmlNode status = spotBot["status"];
                 string location = spotsLocations[spotBot["name"].InnerText].ToString();
 
-                XmlElement spot = createParkingSpot(parkingSpotsDoc, spotBot["id"].InnerText, spotBot["type"].InnerText, spotBot["name"].InnerText, location, status["value"].InnerText, status["timestamp"].InnerText, spotBot["batteryStatus"].InnerText);
+                XmlElement spot = createParkingSpot(spotBot["id"].InnerText, spotBot["type"].InnerText, spotBot["name"].InnerText, location, status["value"].InnerText, status["timestamp"].InnerText, spotBot["batteryStatus"].InnerText);
                 sendSpotData(spot);
                 listBox2.BeginInvoke((MethodInvoker)delegate
                 {
@@ -162,6 +159,32 @@ namespace WindowsFormsApp1
                 });
 
             }
+        }
+
+        public void getParkingLotData()
+        {
+            XmlDocument configDoc = new XmlDocument();
+            string path = "ParkingNodesConfig.xml";
+            configDoc.Load(path);
+
+            XmlNodeList lst = configDoc.SelectNodes("//provider/parkInfo");
+            XmlDocument parkingLots = new XmlDocument();
+            XmlDeclaration dec = parkingLots.CreateXmlDeclaration("1.0", null, null);
+            parkingLots.AppendChild(dec);
+
+            XmlElement root = parkingLots.CreateElement("pkingLotList");
+            parkingLots.AppendChild(root);
+
+            foreach (XmlNode park in lst)
+            {
+                int numberOfSpots = int.Parse(park["numberOfSpots"].InnerText);
+                int numberOfSpecialSpots = int.Parse(park["numberOfSpecialSpots"].InnerText);
+                XmlElement lot = createParkingLot( parkingLots ,park["id"].InnerText, park["description"].InnerText, numberOfSpots, park["operatingHours"].InnerText, numberOfSpecialSpots);
+                root.AppendChild(lot);
+                
+            }
+            sendParkData(root);
+            parkingLots.Save(@"ParkingLots.xml");
         }
 
         public void loadExcelData(string filename, int linesToRead)
@@ -191,18 +214,56 @@ namespace WindowsFormsApp1
                 MessageBox.Show("Error connecting to message broker...");
                 return;
             }
-            m_cClient.Publish(STR_CHANNEL_NAME, Encoding.UTF8.GetBytes(pakingSpot.OuterXml));
+            m_cClient.Publish(STR_SPOTS_CHANNEL_NAME, Encoding.UTF8.GetBytes(pakingSpot.OuterXml));
+        }
+
+        public void sendParkData(XmlElement parkingLot)
+        {
+            m_cClient = new MqttClient("127.0.0.1");
+            m_cClient.Connect(Guid.NewGuid().ToString());
+            if (!m_cClient.IsConnected)
+            {
+                MessageBox.Show("Error connecting to message broker...");
+                return;
+            }
+            m_cClient.Publish(STR_PARKS_CHANNEL_NAME, Encoding.UTF8.GetBytes(parkingLot.OuterXml));
         }
 
         private void btnFormatData_Click(object sender, EventArgs e)
         {
-            //SetTimer();
-            //dll = new ParkingSensorNodeDll.ParkingSensorNodeDll();
-            //bw.RunWorkerAsync();
+
         }
 
-        public XmlElement createParkingSpot(XmlDocument doc, string parkid, string spotType, string spotname, string spotlocation, string spotstatusvalue, string spotTimestamp, string spotbatterystatus)
+        public XmlElement createParkingLot(XmlDocument doc, string parkid, string parkDescription, int parkSpotsNumber, string parkOperatingHours, int parkSpecialSpotsNumber)
         {
+  
+            XmlElement parkingLot = doc.CreateElement("parkingLot");
+
+            XmlElement id = doc.CreateElement("id");
+            id.InnerText = parkid;
+            XmlElement description = doc.CreateElement("description");
+            description.InnerText = parkDescription;
+            XmlElement numberOfSpots = doc.CreateElement("numberOfSpots");
+            numberOfSpots.InnerText = parkSpotsNumber.ToString();
+            XmlElement operatingHours = doc.CreateElement("operatingHours");
+            operatingHours.InnerText = parkOperatingHours;
+            XmlElement numberOfSpecialSpots = doc.CreateElement("numberOfSpecialSpots");
+            numberOfSpecialSpots.InnerText = parkSpecialSpotsNumber.ToString();
+
+            parkingLot.AppendChild(id);
+            parkingLot.AppendChild(description);
+            parkingLot.AppendChild(numberOfSpots);
+            parkingLot.AppendChild(operatingHours);
+            parkingLot.AppendChild(numberOfSpecialSpots);
+
+            return parkingLot;
+        }
+
+        public XmlElement createParkingSpot(string parkid, string spotType, string spotname, string spotlocation, string spotstatusvalue, string spotTimestamp, string spotbatterystatus)
+        {
+            XmlDocument doc = new XmlDocument();
+            XmlDeclaration dec = doc.CreateXmlDeclaration("1.0", null, null);
+            doc.AppendChild(dec);
             XmlElement parkingSpot = doc.CreateElement("parkingSpot");
 
             XmlElement id = doc.CreateElement("id");
@@ -230,11 +291,14 @@ namespace WindowsFormsApp1
             parkingSpot.AppendChild(status);
             parkingSpot.AppendChild(batteryStatus);
 
+           // doc.Save(@"ParkingSpots.xml");
+
             return parkingSpot;
         }
 
         private void Form1_FormLoad(object sender, EventArgs e)
         {
+            getParkingLotData();
             aTimer.Start();
             dll = new ParkingSensorNodeDll.ParkingSensorNodeDll();
             bw.RunWorkerAsync();
@@ -245,7 +309,6 @@ namespace WindowsFormsApp1
             dll.Stop();
             aTimer.Stop();
             aTimer.Dispose();
-            makeResquest = false;
             if (m_cClient.IsConnected)
             {
                 m_cClient.Unsubscribe(m_strTopicsInfo); //Put this in a button to see notif!
