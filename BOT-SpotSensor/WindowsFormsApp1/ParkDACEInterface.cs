@@ -301,8 +301,6 @@ namespace WindowsFormsApp1
             parkingSpot.AppendChild(batteryStatus);
             root.AppendChild(parkingSpot);
 
-            // doc.Save(@"ParkingSpots.xml");
-
             if (!validateParkingSpotsXml(doc))
             {
                 return null;
