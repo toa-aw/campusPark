@@ -20,9 +20,9 @@
     </location>
     <status>
       <value>free</value>
-      <timestamp>2018-12-14 12:32:14</timestamp>
+      <timestamp>2018-12-19 19:33:30</timestamp>
     </status>
-    <batteryStatus>1</batteryStatus>
+    <batteryStatus>0</batteryStatus>
   </parkingSpot>
   <parkingSpot>
     <id>Campus_2_B_Park2</id>
@@ -32,7 +32,7 @@
     </location>
     <status>
       <value>occupied</value>
-      <timestamp>2018-12-14 12:31:52</timestamp>
+      <timestamp>2018-12-19 19:33:46</timestamp>
     </status>
     <batteryStatus>1</batteryStatus>
   </parkingSpot>
@@ -44,7 +44,7 @@
     </location>
     <status>
       <value>occupied</value>
-      <timestamp>2018-12-14 12:31:40</timestamp>
+      <timestamp>2018-12-19 19:33:51</timestamp>
     </status>
     <batteryStatus>1</batteryStatus>
   </parkingSpot>
@@ -55,10 +55,10 @@
     <location>
     </location>
     <status>
-      <value>free</value>
-      <timestamp>2018-12-14 12:32:07</timestamp>
+      <value>occupied</value>
+      <timestamp>2018-12-19 19:33:36</timestamp>
     </status>
-    <batteryStatus>1</batteryStatus>
+    <batteryStatus>0</batteryStatus>
   </parkingSpot>
   <parkingSpot>
     <id>Campus_2_B_Park2</id>
@@ -67,10 +67,10 @@
     <location>
     </location>
     <status>
-      <value>occupied</value>
-      <timestamp>2018-12-14 12:31:46</timestamp>
+      <value>free</value>
+      <timestamp>2018-12-19 19:33:33</timestamp>
     </status>
-    <batteryStatus>1</batteryStatus>
+    <batteryStatus>0</batteryStatus>
   </parkingSpot>
   <parkingSpot>
     <id>Campus_2_B_Park2</id>
@@ -80,9 +80,9 @@
     </location>
     <status>
       <value>occupied</value>
-      <timestamp>2018-12-14 12:31:59</timestamp>
+      <timestamp>2018-12-19 19:32:23</timestamp>
     </status>
-    <batteryStatus>0</batteryStatus>
+    <batteryStatus>1</batteryStatus>
   </parkingSpot>
   <parkingSpot>
     <id>Campus_2_B_Park2</id>
@@ -92,9 +92,9 @@
     </location>
     <status>
       <value>occupied</value>
-      <timestamp>2018-12-14 12:32:09</timestamp>
+      <timestamp>2018-12-19 19:33:49</timestamp>
     </status>
-    <batteryStatus>1</batteryStatus>
+    <batteryStatus>0</batteryStatus>
   </parkingSpot>
   <parkingSpot>
     <id>Campus_2_B_Park2</id>
@@ -104,7 +104,7 @@
     </location>
     <status>
       <value>free</value>
-      <timestamp>2018-12-14 12:32:01</timestamp>
+      <timestamp>2018-12-19 19:33:41</timestamp>
     </status>
     <batteryStatus>0</batteryStatus>
   </parkingSpot>
@@ -116,7 +116,7 @@
     </location>
     <status>
       <value>occupied</value>
-      <timestamp>2018-12-14 12:32:11</timestamp>
+      <timestamp>2018-12-19 19:33:43</timestamp>
     </status>
     <batteryStatus>1</batteryStatus>
   </parkingSpot>

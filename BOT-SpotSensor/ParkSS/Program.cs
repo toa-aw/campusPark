@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 using System.Xml;
 using uPLibrary.Networking.M2Mqtt;
 using uPLibrary.Networking.M2Mqtt.Messages;
-using System.Configuration;
 
 namespace ParkSS
 {
@@ -20,8 +19,8 @@ namespace ParkSS
         static void client_MqttMsgPublishReceived(object sender, MqttMsgPublishEventArgs e)
         {
 
-            //string connString = ConfigurationManager.ConnectionStrings["ParkSS.Properties.Connection.connStr"].ConnectionString;
-            string connString = @"Data Source = (LocalDB)\MSSQLLocalDB; AttachDbFilename = 'D:\T1819\IS\Practica\Campus Park\campusPark\BOT-SpotSensor\ParkSS\ParkingSpots.mdf'; Integrated Security = True";
+            string connString = System.Configuration.ConfigurationManager.ConnectionStrings["ParkSS.Properties.Settings.ConnStr"].ConnectionString;
+            //string connString = @"Data Source = (LocalDB)\MSSQLLocalDB; AttachDbFilename = 'D:\T1819\IS\Practica\Campus Park\campusPark\BOT-SpotSensor\ParkSS\ParkingSpots.mdf'; Integrated Security = True";
             string message = Encoding.UTF8.GetString(e.Message);
 
             Console.WriteLine("Received = " + Encoding.UTF8.GetString(e.Message) + " on topic " + e.Topic);

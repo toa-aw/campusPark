@@ -24,12 +24,15 @@ namespace WindowsFormsApp1
 
         const String STR_SPOTS_CHANNEL_NAME = "parkingSpots";
         const String STR_PARKS_CHANNEL_NAME = "parkingLots";
-        
+
+        Boolean m_bValid = true;
+        String m_strReason;
+
         private System.Windows.Forms.Timer aTimer = new System.Windows.Forms.Timer();
 
         MqttClient m_cClient;
         string[] m_strTopicsInfo = { STR_SPOTS_CHANNEL_NAME, STR_PARKS_CHANNEL_NAME };
-        
+
         private BackgroundWorker bw = new BackgroundWorker();
         private ParkingSensorNodeDll.ParkingSensorNodeDll dll = null;
 
@@ -59,6 +62,7 @@ namespace WindowsFormsApp1
             //To have access to the listbox that is in other thread (Form)
             this.BeginInvoke((MethodInvoker)delegate
             {
+
                 XmlElement newspot = null;
                 string[] spotData = str.Split(';');
                 for (int i = 0; i < spotData.Length; i++)
@@ -152,10 +156,11 @@ namespace WindowsFormsApp1
                 string location = spotsLocations[spotBot["name"].InnerText].ToString();
 
                 XmlElement spot = createParkingSpot(spotBot["id"].InnerText, spotBot["type"].InnerText, spotBot["name"].InnerText, location, status["value"].InnerText, status["timestamp"].InnerText, spotBot["batteryStatus"].InnerText);
+
                 sendSpotData(spot);
-                listBox2.BeginInvoke((MethodInvoker)delegate
+                listBox1.BeginInvoke((MethodInvoker)delegate
                 {
-                    listBox2.Items.Add(spot.OuterXml);
+                    listBox1.Items.Add(spot.OuterXml);
                 });
 
             }
@@ -172,18 +177,23 @@ namespace WindowsFormsApp1
             XmlDeclaration dec = parkingLots.CreateXmlDeclaration("1.0", null, null);
             parkingLots.AppendChild(dec);
 
-            XmlElement root = parkingLots.CreateElement("pkingLotList");
+            XmlElement root = parkingLots.CreateElement("parkingLotList");
             parkingLots.AppendChild(root);
 
             foreach (XmlNode park in lst)
             {
                 int numberOfSpots = int.Parse(park["numberOfSpots"].InnerText);
                 int numberOfSpecialSpots = int.Parse(park["numberOfSpecialSpots"].InnerText);
-                XmlElement lot = createParkingLot( parkingLots ,park["id"].InnerText, park["description"].InnerText, numberOfSpots, park["operatingHours"].InnerText, numberOfSpecialSpots);
+                XmlElement lot = createParkingLot(parkingLots, park["id"].InnerText, park["description"].InnerText, numberOfSpots, park["operatingHours"].InnerText, numberOfSpecialSpots);
                 root.AppendChild(lot);
-                
+
             }
-            sendParkData(root);
+
+            if (validateParkingLotsXml(parkingLots))
+            {
+                sendParkData(root);
+            }
+
             parkingLots.Save(@"ParkingLots.xml");
         }
 
@@ -229,14 +239,8 @@ namespace WindowsFormsApp1
             m_cClient.Publish(STR_PARKS_CHANNEL_NAME, Encoding.UTF8.GetBytes(parkingLot.OuterXml));
         }
 
-        private void btnFormatData_Click(object sender, EventArgs e)
-        {
-
-        }
-
         public XmlElement createParkingLot(XmlDocument doc, string parkid, string parkDescription, int parkSpotsNumber, string parkOperatingHours, int parkSpecialSpotsNumber)
         {
-  
             XmlElement parkingLot = doc.CreateElement("parkingLot");
 
             XmlElement id = doc.CreateElement("id");
@@ -264,6 +268,11 @@ namespace WindowsFormsApp1
             XmlDocument doc = new XmlDocument();
             XmlDeclaration dec = doc.CreateXmlDeclaration("1.0", null, null);
             doc.AppendChild(dec);
+
+            XmlElement root = doc.CreateElement("parkinglot");
+            doc.AppendChild(root);
+            root.SetAttribute("name", parkid);            
+
             XmlElement parkingSpot = doc.CreateElement("parkingSpot");
 
             XmlElement id = doc.CreateElement("id");
@@ -290,10 +299,69 @@ namespace WindowsFormsApp1
             parkingSpot.AppendChild(location);
             parkingSpot.AppendChild(status);
             parkingSpot.AppendChild(batteryStatus);
+            root.AppendChild(parkingSpot);
 
-           // doc.Save(@"ParkingSpots.xml");
+            // doc.Save(@"ParkingSpots.xml");
+
+            if (!validateParkingSpotsXml(doc))
+            {
+                return null;
+            }
 
             return parkingSpot;
+        }
+
+        private bool validateParkingSpotsXml(XmlDocument doc)
+        {
+            ValidationEventHandler eventHandler = new ValidationEventHandler(MyValidationMethod);
+
+            doc.Schemas.Add(null, "ParkingSpots.xsd");
+
+            doc.Validate(eventHandler);
+
+            if (m_bValid)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        private bool validateParkingLotsXml(XmlDocument doc)
+        {
+            ValidationEventHandler eventHandler = new ValidationEventHandler(MyValidationMethod);
+
+            doc.Schemas.Add(null, "ParkingLots.xsd");
+
+            doc.Validate(eventHandler);
+
+            if (m_bValid)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        private void MyValidationMethod(Object sender, ValidationEventArgs args)
+        {
+            m_bValid = false;
+
+            switch (args.Severity)
+            {
+                case XmlSeverityType.Error:
+                    m_strReason = args.Message;
+                    break;
+                case XmlSeverityType.Warning:
+                    break;
+                default:
+                    m_strReason = "Unknown";
+                    break;
+            }
         }
 
         private void Form1_FormLoad(object sender, EventArgs e)

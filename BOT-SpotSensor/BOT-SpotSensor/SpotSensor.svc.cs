@@ -89,19 +89,23 @@ namespace BOT_SpotSensor
             int isfree = nodeParkingSpotStatus["value"].InnerText.CompareTo("free");
             int isOccupied = nodeParkingSpotStatus["value"].InnerText.CompareTo("occupied");
 
-            if (isfree == 0)
-            {
-                nodeParkingSpotStatus["value"].InnerText = "occupied";
-            }
-            else if (isOccupied == 0)
-            {
-                nodeParkingSpotStatus["value"].InnerText = "free";
+            nodeBatteryStatus = nodeParkingSpot["batteryStatus"];
+            int batteryStatus = int.Parse(nodeBatteryStatus.InnerText);
+
+            if (batteryStatus == 0){
+                if (isfree == 0)
+                {
+                    nodeParkingSpotStatus["value"].InnerText = "occupied";
+                }
+                else if (isOccupied == 0)
+                {
+                    nodeParkingSpotStatus["value"].InnerText = "free";
+                }
             }
 
-            if(random.Next(100) > 90)
+            if(random.Next(100) > 95)
             { 
-                nodeBatteryStatus = nodeParkingSpot["batteryStatus"];
-                int batteryStatus = int.Parse(nodeBatteryStatus.InnerText);
+                
 
                 if(batteryStatus == 0)
                 {

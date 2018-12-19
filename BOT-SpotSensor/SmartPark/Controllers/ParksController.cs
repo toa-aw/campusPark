@@ -11,11 +11,13 @@ namespace SmartPark.Controllers
 {
     public class ParksController : ApiController
     {
+        string strConn = System.Configuration.ConfigurationManager.ConnectionStrings["SmartPark.Properties.Settings.ConnStr"].ConnectionString;
+
         public IEnumerable<Park> GetAllParks()
         {
             List<Park> parks = new List<Park>();
 
-            using (SqlConnection conn = new SqlConnection())
+            using (SqlConnection conn = new SqlConnection(strConn))
             {
                 SqlCommand cmd = new SqlCommand("SELECT * FROM ParkingLots", conn);
                 try
@@ -28,7 +30,11 @@ namespace SmartPark.Controllers
                         {
                             Id = (int)reader["Id"],
                             Name = reader["Name"].ToString(),
-                        };
+                            Description = reader["Description"].ToString(),
+                            NumberOfSpots = (int)reader["NumberOfSpots"],
+                            OperatingHours = reader["OpeningHours"].ToString(),
+                            NumberOfSpecialSpots = (int)reader["NumberOfSpecialSpots"],
+                    };
                         parks.Add(park);
                     }
                     reader.Close();
@@ -46,7 +52,7 @@ namespace SmartPark.Controllers
         public IHttpActionResult GetParkInformation(int id)
         {
             Park park = new Park();
-            using (SqlConnection conn = new SqlConnection())
+            using (SqlConnection conn = new SqlConnection(strConn))
             {
                 SqlCommand cmd = new SqlCommand();
                 cmd.CommandText = "SELECT * FROM ParkingLots WHERE id = @idpark";
@@ -64,7 +70,7 @@ namespace SmartPark.Controllers
                         park.Name = reader["Name"].ToString();
                         park.Description = reader["Description"].ToString();
                         park.NumberOfSpots = (int)reader["NumberOfSpots"];
-                        park.OperatingHours = reader["OperatingHours"].ToString();
+                        park.OperatingHours = reader["OpeningHours"].ToString();
                         park.NumberOfSpecialSpots = (int)reader["NumberOfSpecialSpots"];
                         reader.Close();
                         return Ok(park);
@@ -83,16 +89,20 @@ namespace SmartPark.Controllers
         [Route("api/parks/{id:int}/occupancy")]
         public IHttpActionResult GetParkOccupancyRate(int id)
         {
-            decimal occupancyRate = 0;
-            using (SqlConnection conn = new SqlConnection())
+            using (SqlConnection conn = new SqlConnection(strConn))
             {
                 SqlCommand cmd = new SqlCommand();
-                cmd.CommandText = "SELECT (occupied/free * 100) AS occupancyrate " +
-                                  "FROM (SELECT COUNT(*) as occupied FROM parkingspotsinfo WHERE UPPER(value) = 'OCCUPIED' AND parkinglotid = @idpark), " +
-                                  "(SELECT COUNT(*) as free FROM parkingspotsinfo WHERE UPPER(value) = 'FREE' AND parkinglotid = @idpark);";
+                cmd.CommandText = "SELECT occupied, totalSpots " +
+                                  "FROM (SELECT COUNT(*) AS occupied FROM ParkingSpotsInfo WHERE UPPER(status) = 'OCCUPIED' AND parkinglotid = @idpark) AS t1, " +
+                                       "(SELECT COUNT(*) AS totalSpots FROM ParkingSpotsInfo WHERE parkinglotid = @idpark) AS t2";
                 cmd.Parameters.AddWithValue("@idpark", id);
                 cmd.CommandType = System.Data.CommandType.Text;
                 cmd.Connection = conn;
+
+                decimal occupied;
+                decimal free;
+
+                decimal occupancyRate;
 
                 try
                 {
@@ -100,7 +110,10 @@ namespace SmartPark.Controllers
                     SqlDataReader reader = cmd.ExecuteReader();
                     if (reader.Read())
                     {
-                        occupancyRate = Convert.ToDecimal(reader["occupancyrate"]);
+                        occupied = Convert.ToDecimal(reader["occupied"]);
+                        free = Convert.ToDecimal(reader["totalSpots"]);
+
+                        occupancyRate = (occupied / free) * 100;
                         reader.Close();
                         return Ok(occupancyRate);
                     }

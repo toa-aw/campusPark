@@ -8,8 +8,8 @@ namespace SmartPark.Models
     public class ParkingSpot
     {
         public int Id { get; set; }
-        public string Type { get; set; }
         public string Name { get; set; }
+        public int ParkingLotId { get; set; }
         public string Location { get; set; }
         public string Status { get; set; }
         public string Timestamp { get; set; }
